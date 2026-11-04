@@ -7,8 +7,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
 export const metadata: Metadata = {
-  title: 'Milan — A thoughtful way to find your Milan',
-  description: 'A preliminary visual concept for a Maithil matrimonial platform rooted in culture, conversation, and consent.',
+  title: 'Mithila Milan — Find a match with meaning',
+  description: 'A thoughtful matrimonial space rooted in Maithil values, open conversation, and community care.',
   generator: 'v0.app',
 }
 
