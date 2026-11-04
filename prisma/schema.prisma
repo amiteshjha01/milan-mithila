@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  email       String   @unique
+  name        String?
+  role        String   @default("USER")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  profile     Profile?
+  interests   Interest[]
+  sentMatches Match[]  @relation("sentMatches")
+  receivedMatches Match[] @relation("receivedMatches")
+}
+
+model Profile {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @db.Uuid
+  displayName    String
+  age            Int
+  city           String
+  state          String
+  profession     String
+  education      String
+  familySummary  String
+  about          String
+  photoUrl       String?
+  gotra          String?
+  mool           String?
+  familyOrigin   String?
+  languages      String[]
+  values         String[]
+  verified       Boolean  @default(false)
+  visibility     String   @default("COMMUNITY")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model Interest {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  label       String
+  category    String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  @@index([userId])
+}
+
+model Match {
+  id          String   @id @default(uuid()) @db.Uuid
+  senderId    String   @db.Uuid
+  receiverId  String   @db.Uuid
+  status      String   @default("PENDING")
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sender      User     @relation("sentMatches", fields: [senderId], references: [id])
+  receiver    User     @relation("receivedMatches", fields: [receiverId], references: [id])
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+}
