@@ -57,3 +57,51 @@ Do not encode lineage rules as hard-coded conditionals. Store reviewed `communit
 ## Data lifecycle
 
 Draft profiles are private. Unpublished drafts can be deleted by the owner. Published profiles are hidden immediately on deactivation. Media, documents, messages, reports, and audit events each receive documented retention periods approved by counsel. Backups have a separate expiry process. Export uses a reviewable archive that excludes secrets, internal risk scores, and third-party private data.
+
+## Expanded cultural data model
+
+Cultural data is not a single column on `profiles`. It is a set of claims, each with its own applicability, visibility, provenance, and review state.
+
+### Claim model
+
+Use a generic `cultural_claims` table with:
+
+- `id`, `profile_id`, `concept_type` (`gotra`, `mool`, `kul`, `pravara`, `kul_deity`, `panji_reference`), and optional `term_id`.
+- `free_text_value` only when no approved term exists; never silently convert free text into a canonical term.
+- `value_state` (`known`, `unknown`, `not_applicable`, `undisclosed`, `pending_review`, `disputed`).
+- `claim_scope` referencing one or more `community_scopes`; applicability is explicit, not inferred from surname, caste, district, or religion.
+- `claim_role` (`self_reported`, `family_reported`, `documented`, `reviewer_assessed`) and `verification_status` (`unverified`, `evidence_received`, `under_review`, `verified`, `rejected`, `expired`).
+- `source_type`, `source_reference`, `source_attribution`, `entered_by`, `claimed_at`, `reviewed_at`, `reviewer_id`, `review_decision_id`, and `valid_from`/`valid_to`.
+- `visibility_scope` (`private`, `delegates`, `matched_only`, `searchable_coarse`, `public_label`) and `searchable` boolean, default false.
+
+A profile may hold multiple non-identical claims for the same concept. Conflicting claims remain visible to authorized reviewers as a conflict set; the system must not overwrite one claim with another. `cultural_claim_aliases` maps alternate spellings/transliterations to a canonical term only when a curator has approved the mapping, preserving the original input and locale.
+
+### Taxonomy and provenance
+
+`cultural_terms` stores canonical terms, aliases, script/transliteration variants, locale, community scope, source citation, source excerpt or page reference, curator, review status, effective dates, and supersession links. `cultural_term_scope` maps a term to applicable communities without implying that the term is universal. `cultural_provenance` stores immutable source snapshots or references and the provenance chain for imports. No public search index may expose private claim text or evidence.
+
+`panji_claims` is a restricted subtype for a user-provided Panji reference: record identifier (encrypted/tokenized where feasible), record-holder or Panjikar organization, user authorization, evidence pointer, review outcome, expiry/re-review date, and display consent. Store no full genealogical book or family graph in MVP. Cultural reviewers see only assigned claims and minimum evidence; they cannot browse profiles or contact details.
+
+### Secure storage and search
+
+Store claim values and evidence in separate encrypted/private tables or object prefixes. Public profile projections contain only approved labels and coarse applicability. Search uses tenant- and role-scoped projections with keyed/opaque IDs and no exact lineage evidence. Sensitive filters require an explicit product policy and authorization check; private claims are never used for autocomplete, analytics, ranking, or URL parameters. Search logs are minimized and retained only for the approved period. Every claim read, export, review, merge, and visibility change emits an audit event.
+
+### Compatibility rule boundary
+
+`community_rules` must reference claim types, scopes, versioned inputs, confidence, source citation, reviewer, explanation, and `requires_human_review`. Rules produce `compatible`, `incompatible`, or `uncertain` only within a named community scope and never write a permanent rejection. MVP matching does not execute these rules; it uses explicit user preferences and displays “not evaluated” where cultural review is unavailable.
+
+## Verification architecture
+
+Use one `verification_cases` parent with a separate case type and evidence policy for each badge. Badges are independent and must never imply that other attributes were checked.
+
+| Badge | Evidence | Workflow | MVP display |
+|---|---|---|---|
+| Mobile | OTP to claimed number; provider delivery result | rate limit → OTP verify → record timestamp/provider | `Mobile verified` |
+| Email | signed time-limited link or OTP | confirm address → record timestamp | `Email verified` |
+| Age eligibility | date of birth plus adult attestation; identity check only where counsel/provider approves | server-side age gate → if needed scoped identity review → do not publish DOB | `Adult profile` or no badge |
+| Photo | user consent and media scan; optional liveness only if separately approved | upload → malware/content/duplicate checks → human escalation | `Photo reviewed` (not identity) |
+| Identity | approved provider evidence, minimum attributes, deletion schedule | provider review → pass/fail/manual review → evidence token retained, raw document deleted per policy | `Identity verified` |
+| Family | owner invite and acceptance; delegated relationship attestation | invite → owner authenticates → permissions → expiry/revocation | `Family access authorized` is private, not a public trust badge |
+| Panji | user authorization plus scoped evidence and qualified reviewer decision | assign reviewer → conflict check → decision with source/provenance → user chooses display | `Panji review: pending/verified/uncertain` |
+
+Evidence is encrypted, access-controlled, time-limited, and never downloadable by default. Each badge records issuer, evidence class, decision, timestamp, expiry, appeal path, and what it does not verify. Manual operators must use reason codes and all access is audited. A missing badge is not a negative finding.
