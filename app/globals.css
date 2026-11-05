@@ -5,6 +5,7 @@
 @import '../styles/dashboard.css';
 @import '../styles/profile.css';
 @import './discover/discover.css';
+@import './profiles/profile-details.css';
 
 @custom-variant dark (&:is(.dark *));
 
