@@ -3,6 +3,7 @@
 @import 'shadcn/tailwind.css';
 @import './public-pages.css';
 @import '../styles/dashboard.css';
+@import '../styles/profile.css';
 
 @custom-variant dark (&:is(.dark *));
 
