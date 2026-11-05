@@ -4,7 +4,7 @@
 @import './public-pages.css';
 @import '../styles/dashboard.css';
 @import '../styles/profile.css';
-@import '../styles/discover.css';
+@import './discover/discover.css';
 
 @custom-variant dark (&:is(.dark *));
 
