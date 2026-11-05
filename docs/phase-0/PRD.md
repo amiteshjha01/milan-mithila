@@ -249,7 +249,41 @@ Implementation order:
 - All privileged actions auditable; admin access least privilege and MFA-ready.
 - Test unit, integration, authorization, abuse, accessibility, and critical browser flows.
 
-## 14. Security, privacy, and legal requirements
+## 14. MVP audience, geography, and launch gate
+
+### Initial target audience
+
+The MVP targets adults aged 18+ who self-identify as Maithil or seek a Maithil partner, plus consenting family delegates. The first cohort should prioritize self-managed adults and family-assisted households willing to participate in interviews, rather than attempting to represent every Maithil sub-community at launch. The product must support users who do not know or do not wish to disclose lineage fields.
+
+### Launch geography
+
+Start with a deliberately bounded cohort: Mithila-origin users in Bihar (especially Madhubani, Darbhanga, Sitamarhi, Muzaffarpur and nearby districts), Kathmandu/Nepal-connected families where counsel confirms the cross-border operating model, and diaspora users in one or two initial countries selected through research. Geography is a launch cohort and service-availability boundary, not a claim about who is “authentically” Maithil. Exact countries, language coverage, and support hours require validation before public launch.
+
+### Mandatory before launch
+
+- Adult account and owner consent; mobile and email verification.
+- Privacy-by-default profile fields, photo consent, secure upload, and explicit publish/unpublish.
+- Separate verification statuses for mobile, email, age eligibility, photo review, identity (if offered), family delegation, and Panji review; no ambiguous “verified user” badge.
+- Search, shortlist, interest, mutual permission, internal messaging, block, report, and account-level safety controls.
+- Moderation queue, impersonation/scam escalation, grievance intake, staff MFA/RBAC, audit events, and incident runbook.
+- Data access/export, correction, deletion/deactivation, delegate revocation, consent withdrawal, and retention jobs tested.
+- Reviewed terms/privacy/consent copy, child-safety safeguards, accessibility baseline, translated critical safety/legal copy, and counsel sign-off.
+
+### Deferred from MVP
+
+Identity-provider integration requiring document/biometric processing, Panjikar review marketplace, automated compatibility rules, paid subscriptions, public events, horoscope matching, recommendation learning, native mobile apps, and open genealogy graphs are future features unless a launch cohort and counsel explicitly approve a narrower version.
+
+## 15. Verification and safety acceptance criteria
+
+A profile cannot publish until adult eligibility and owner consent are complete, contact verification has passed, required safety fields are present, and automated/media checks have cleared or been escalated. The UI must show each badge's evidence class, date/expiry, scope, and limitations. Identity and Panji evidence are never visible to other members by default.
+
+Before launch, test: account takeover recovery; delegate impersonation and revocation; OTP abuse; photo/document leakage; exact-location inference; scam reports; block/message races; deletion while a report is open; and staff access to restricted evidence. A safety incident has a severity, owner, SLA, evidence policy, user communication path, and appeal outcome.
+
+## 16. Cultural data and verification boundary
+
+Store multiple cultural claims with original spelling, canonical aliases only when curated, community scope, provenance, verification state, visibility, and dispute history. Store Gotra, Mool, Kul, Pravara, and Panji references as separate concepts. Search and ranking must never expose or infer private claims. Cultural review is not identity verification; Panji review is not a universal marriage verdict. These boundaries are implementation requirements, not finalized compatibility rules.
+
+## 17. Security, privacy, and legal requirements
 
 Treat the service as a data fiduciary/controller handling identity, relationship, location, family, cultural, religious, financial, and potentially biometric/identity-verification data. Obtain qualified Indian counsel before launch to confirm DPDP Act 2023 commencement/rules, IT Rules applicability, intermediary obligations, consumer protection, electronic contracting, payment rules, cross-border transfers, child-safety requirements, accessibility, and Nepal/diaspora obligations.
 

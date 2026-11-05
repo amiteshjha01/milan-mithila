@@ -40,6 +40,21 @@ Explore reviewed cultural education, community events, Panjikar partnerships, as
 
 Run functional, authorization, security, privacy, accessibility, performance, mobile, SEO, backup/restore, content, and incident-response tests. Complete counsel review, operational runbooks, support training, and staged rollout.
 
+## Phase 0 completion checklist
+
+- [x] Research-backed PRD, personas, journeys, sitemap, MVP boundary, and architecture documented.
+- [x] Cultural concepts separated into Gotra, Mool, Kul, Pravara, and Panji claims with uncertainty, provenance, aliases, scope, and review states.
+- [x] Verification architecture separates mobile, email, age, photo, identity, family, and Panji evidence and badges.
+- [x] Competitor scan covers BharatMatrimony, Shaadi.com, Jeevansathi, and offline/community alternatives with hypotheses for validation.
+- [x] Academic, primary, legal, and product source register expanded with URLs and commencement tracking.
+- [x] Retention, consent, delegated access, deletion, safety, and launch legal review requirements documented.
+- [x] MVP audience, bounded launch geography, mandatory safety gates, and deferred features defined.
+- [ ] Maithil expert panel validates terminology, translations, Panji practice, community scope, and cultural copy.
+- [ ] Indian and cross-border counsel validates DPDP/IT Rules applicability, commencement, contracts, retention, transfers, and launch claims.
+- [ ] Product owner approves Phase 0 and explicitly authorizes Phase 1.
+
+Phase 1 remains blocked until the three unchecked gates are complete. No application code or cultural compatibility rules should be started before approval.
+
 ## Delivery gates
 
 - Every phase ends with a working demo, tests, known-risk register, and reviewer sign-off.
