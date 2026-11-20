@@ -1,0 +1,79 @@
+# Mithila Milan — Complete Public Knowledge Reference
+
+> A consent-first, privacy-respecting matrimonial platform rooted in Maithil cultural heritage, open conversation, and community care.
+
+---
+
+## 1. What Is Mithila Milan?
+
+Mithila Milan is a dedicated matrimonial space designed for the Maithil community across historic Mithila (including Darbhanga, Madhubani, Samastipur, Saharsa, Sitamarhi, Muzaffarpur, Supaul, Begusarai, and Janakpur Dham), major Indian metros (Delhi NCR, Bengaluru, Mumbai, Kolkata, Pune), and the global Maithil diaspora (USA, UK, Canada, Europe, Australia, UAE).
+
+Unlike high-volume matrimonial directories that expose phone numbers or encourage unsolicited outreach, Mithila Milan is built around three core principles:
+1. **Individual Consent First:** Every profile requires direct authorization from the adult seeker. Conversations only open when both individuals mutually accept an interest.
+2. **Cultural Respect Without Rigid Gatekeeping:** Members may voluntarily include Maithil cultural markers (such as Gotra, Mool, native district, or family heritage) with granular, section-by-section privacy controls.
+3. **DPDP Act 2023 Privacy Architecture:** Phone numbers, email addresses, and exact home addresses are never exposed publicly. Personal data is never sold or monetized for third-party advertising.
+
+---
+
+## 2. How Mithila Milan Works (`/how-it-works`)
+
+1. **Create your profile:** Share your personal, academic, and professional story at your own pace.
+2. **Add cultural context (voluntary):** Optionally include Gotra, Mool, or native village/district details and configure who can view each section (Members, Connections only, or Private).
+3. **Discover thoughtfully:** Explore compatible Maithil profiles aligned on values, lifestyle, and life goals.
+4. **Express mutual interest:** Send a considered signal. Private messaging opens only after mutual acceptance.
+5. **Involve your families:** Introduce parents and trusted elders at the right moment in an atmosphere of warmth and respect.
+
+---
+
+## 3. Public Cultural Tools & Resources
+
+### Kundali & Ashtakoot Guna Milan (`/kundali-matching`)
+An interactive Vedic compatibility tool that computes 36-Guna Ashtakoot scores across the eight traditional Kootas (Varna, Vashya, Tara, Yoni, Graha Maitri, Gana, Bhakoot, and Nadi), alongside Gotra awareness and Manglik balance indicators. It is designed as an educational and exploratory guide for families; authoritative astrological or genealogical validation should always be confirmed with a qualified scholar or Panjikar.
+
+### Traditional Maithil Biodata Generator (`/biodata`)
+A free, print-ready matrimonial biodata builder tailored for Maithil families. It supports personal, educational, career, family, and optional cultural fields (Gotra, Mool, native village, astrological details) framed with traditional Mithila motifs.
+
+### Milan Select (`/milan-select`)
+An assisted, confidential concierge matchmaking option tailored for busy professionals, doctors, civil servants, entrepreneurs, and global NRI Maithil families seeking curated introductions with dedicated relationship support.
+
+### Membership (`/membership`)
+Offers accessible free profile creation and discovery alongside optional premium tiers for enhanced visibility, deeper filters, and concierge assistance.
+
+---
+
+## 4. Maithil Matrimonial Heritage Glossary (`/culture`)
+
+- **Gotra:** Traditional patrilineal lineage identifier traced back to ancient Vedic Rishis (such as Shandilya, Kashyap, Vatsa, Bharadwaj, Parashar, Garg, Katyayani, etc.). Historically used to avoid same-lineage marriages.
+- **Mool & Moolgram:** Ancestral village or territorial lineage origin within Mithila, traditionally paired with Gotra to document family roots.
+- **Panji Prabandha (Panji System):** A centuries-old genealogical record-keeping tradition of Mithila (formalized during the era of Raja Harisimhadeva) maintained by specialized genealogists called **Panjikars**.
+- **Sapinda & Siddhanta:** Traditional kinship guidelines checked during marriage negotiations to ensure appropriate generational distance across paternal and maternal lines. *Important notice:* Mithila Milan displays user-submitted cultural descriptors for exploration only and does not issue official Panji or Siddhanta certificates; authoritative genealogical clearance belongs with qualified Panjikars.
+- **Saurath Sabha:** Historic annual matrimonial gathering in Saurath (Madhubani, Bihar) where Maithil families traditionally met to negotiate alliances with the assistance of Panjikars.
+- **Kohbar Ghar:** The sacred nuptial chamber adorned with traditional Mithila (Madhubani) wall murals featuring the Lotus (Kamal — purity), Fish pair (Macha — abundance), Bamboo grove (Bans — resilience), and Sun & Moon as witnesses.
+- **Aripan:** Sacred geometric floor blessings drawn with rice paste (Pithar) and vermilion on auspicious wedding mornings.
+- **Samdaun:** Traditional Maithil ceremonial folk songs expressing emotion, blessings, and farewells during wedding rituals.
+
+---
+
+## 5. Trust, Safety, Legal & Privacy Commitments (`/safety`, `/privacy`, `/terms`)
+
+- **Eligibility:** Strictly for adults of legal marriageable age (18+ for women, 21+ for men under Indian law). Proxy registrations without the seeker's consent are prohibited.
+- **Zero Tolerance for Dowry:** In strict compliance with the Dowry Prohibition Act, 1961, asking for, hinting at, or facilitating dowry in any form results in immediate permanent account termination.
+- **Contact Shield & Watermarked Media:** Direct contact details are hidden by default until mutual consent; profile photos use visibility controls.
+- **DPDP Act 2023 Rights:** Users may access their data, correct inaccuracies, revoke consent, pause visibility, or permanently delete their account and associated personal data.
+- **Intermediary Scope:** Mithila Milan is a discovery platform, not a background-investigation agency or legal solemnizer. Families are encouraged to conduct standard personal due diligence before finalizing marriage commitments.
+
+---
+
+## 6. Frequently Asked Questions
+
+**Q: Who is Mithila Milan for?**
+A: Adult Maithil individuals and their families across Bihar, Jharkhand, Nepal (Janakpur/Mithila), metropolitan India, and the global diaspora looking for serious, respectful matrimonial connections.
+
+**Q: Are Gotra and Mool mandatory to join?**
+A: No. Cultural markers like Gotra, Mool, and native village are completely voluntary and self-declared, and members control whether they are visible to all members, connections only, or kept private.
+
+**Q: Does Mithila Milan issue official Panji or Siddhanta clearance?**
+A: No. Lineage fields and compatibility calculators on Mithila Milan are exploratory aids. Families seeking formal Panji or Siddhanta verification should consult independent, qualified Maithil Panjikars.
+
+**Q: Are member profiles indexed by Google or AI crawlers?**
+A: No. All member profiles, dashboards, messages, and personal account pages are strictly excluded from search engines and AI crawlers via `robots.txt` and `noindex` directives.
