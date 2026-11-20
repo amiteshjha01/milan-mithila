@@ -1,0 +1,30 @@
+# Mithila Milan
+
+> Mithila Milan is a consent-first matrimonial platform and cultural resource built for Maithil families across Mithila (Bihar, Jharkhand, Nepal/Janakpur), India, and the global diaspora. It pairs modern individual agency and DPDP Act 2023 privacy protections with Maithil matrimonial traditions, Ashtakoot Kundali matching, and traditional biodata tools.
+
+## Core Public Pages
+
+- [Home](/): Overview of Mithila Milan, cultural values, community districts, and onboarding journey.
+- [How It Works](/how-it-works): Five-step consent-first matchmaking flow from profile creation to family introduction.
+- [Cultural Heritage](/culture): Educational guide to Maithil matrimonial traditions including Gotra, Mool, Panji, Sapinda, Kohbar Ghar, Aripan, Samdaun, and Saurath Sabha.
+- [Kundali & Ashtakoot Guna Milan](/kundali-matching): Interactive Vedic 36-Guna Ashtakoot compatibility tool with Gotra awareness and Manglik balance guidance.
+- [Matrimonial Biodata Generator](/biodata): Traditional Maithil biodata builder with Gotra, Mool, family details, and print-ready royal Mithila motifs.
+- [Milan Select](/milan-select): Assisted concierge matchmaking for professionals, doctors, civil servants, and global NRI Maithil families.
+- [Membership](/membership): Overview of free and premium membership tiers and features.
+- [About](/about): Vision, community mission, and design philosophy behind Mithila Milan.
+
+## Trust, Safety & Legal
+
+- [Trust & Safety](/safety): Safety practices, granular privacy controls, anti-dowry stance, and honest verification scope.
+- [Privacy Policy](/privacy): DPDP Act 2023 aligned privacy commitments, individual consent, and cultural data governance.
+- [Terms of Service](/terms): Eligibility (18+ women / 21+ men), strict zero-tolerance anti-dowry policy, and exploratory lineage notice.
+- [Contact](/contact): Support and community contact information.
+
+## Full Context for AI Systems
+
+- [Extended Knowledge Reference](/llms-full.txt): Self-contained Markdown reference covering Mithila Milan's philosophy, Maithil cultural glossary, tools, safety commitments, and FAQs.
+
+## Privacy & Crawler Boundaries
+
+- Public informational pages, `/llms.txt`, and `/llms-full.txt` are open for search indexing and AI citation.
+- Member profiles (`/profiles/*`), dashboards (`/dashboard/*`), discovery feeds (`/discover`), messaging (`/messages`), and authentication/admin routes are private, non-indexable (`noindex`), and strictly excluded from crawling to protect member dignity and personal data.

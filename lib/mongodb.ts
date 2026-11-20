@@ -1,9 +1,61 @@
 import mongoose from 'mongoose'
 
-const uri = process.env.MONGODB_URI
+const MONGODB_URI = process.env.MONGODB_URI
 
+interface MongooseCache {
+  conn: typeof mongoose | null
+  promise: Promise<typeof mongoose> | null
+}
+
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: MongooseCache | undefined
+}
+
+let cached: MongooseCache = global.mongooseCache || { conn: null, promise: null }
+
+if (!global.mongooseCache) {
+  global.mongooseCache = cached
+}
+
+/**
+ * Connects to MongoDB Atlas / local MongoDB with connection pooling and caching.
+ * If MONGODB_URI is not yet provided, returns null gracefully without crashing the app.
+ */
 export async function connectMongo() {
-  if (!uri) throw new Error('MONGODB_URI is not configured')
-  if (mongoose.connection.readyState === 1) return mongoose.connection
-  return mongoose.connect(uri, { dbName: process.env.MONGODB_DB || 'mithila_milan' })
+  const MONGODB_URI = process.env.MONGODB_URI
+  if (!MONGODB_URI) {
+    // Database will connect later once credentials are provided
+    return null
+  }
+
+  if (cached.conn) {
+    return cached.conn
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      dbName: process.env.MONGODB_DB || 'mithila_milan',
+      maxPoolSize: 10,
+    }
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+      return mongooseInstance
+    })
+  }
+
+  try {
+    cached.conn = await cached.promise
+  } catch (e) {
+    cached.promise = null
+    console.error('MongoDB connection failed') // error object intentionally not logged (may embed connection details)
+    return null
+  }
+
+  return cached.conn
+}
+
+export function isMongoConfigured(): boolean {
+  return Boolean(process.env.MONGODB_URI)
 }

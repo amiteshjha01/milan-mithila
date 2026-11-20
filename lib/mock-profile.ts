@@ -55,11 +55,11 @@ export type ProfileForm = {
 }
 
 export const profileDefaults: ProfileForm = {
-  fullName: 'Mitali Sharma', gender: 'Woman', dateOfBirth: '1998-06-14', height: '5 ft 4 in', maritalStatus: 'Never married', motherTongue: 'Maithili', currentLocation: 'New Delhi, Delhi', nativeDistrict: 'Madhubani', nativeVillage: 'Sakri', country: 'India',
-  highestQualification: 'Postgraduate', degree: 'MBA · Finance', college: 'Delhi University', occupation: 'Strategy Consultant', workingSector: 'Private sector', employer: 'Northstar Advisory', annualIncome: 'Prefer not to disclose', workLocation: 'New Delhi', professionalDescription: 'I enjoy solving thoughtful problems, working with people, and keeping a little room for curiosity outside of work.',
-  fatherOccupation: 'Retired civil engineer', motherOccupation: 'School teacher', siblings: 'One younger sister', familyType: 'Nuclear', familyValues: 'Progressive with strong roots', familyVillage: 'Sakri, Madhubani', familyDescription: 'A close-knit family that values education, kindness, and staying connected to our Mithila roots.', familyVisibility: 'Members only',
-  community: 'Maithil Brahmin', subCommunity: 'Prefer not to disclose', gotra: 'Kashyapa', mool: 'Sakri', ancestralVillage: 'Sakri, Madhubani', kul: 'Not known', pravara: 'Not applicable', kuldevi: 'Prefer not to disclose', panjiAvailability: 'not-known', maternalLineage: 'My maternal family has roots in Darbhanga.', culturalVisibility: 'Members only',
-  ageRange: '27–33 years', heightRange: '5 ft 5 in – 6 ft 1 in', educationPreference: 'Postgraduate or equivalent', professionPreference: 'Thoughtful, stable work', locationPreference: 'Open to Delhi NCR, Bengaluru, Mumbai', communityPreference: 'Open to conversation', lifestylePreference: 'Balanced and community-minded', employmentPreference: 'Professional / self-employed', relocationPreference: 'Open to discussion', familyPreference: 'Warm and respectful family', gotraPreference: '', moolPreference: '',
+  fullName: 'Verified Member', gender: 'Man', dateOfBirth: '1998-01-01', height: '5 ft 6 in', maritalStatus: 'Never married', motherTongue: 'Maithili', currentLocation: 'Patna, Bihar', nativeDistrict: 'Madhubani', nativeVillage: 'Madhubani', country: 'India',
+  highestQualification: 'Postgraduate', degree: 'Graduate', college: 'University', occupation: 'Professional', workingSector: 'Private sector', employer: '', annualIncome: 'Prefer not to disclose', workLocation: 'Patna', professionalDescription: '',
+  fatherOccupation: '', motherOccupation: '', siblings: 'None specified', familyType: 'Nuclear', familyValues: 'Progressive with strong roots', familyVillage: 'Madhubani', familyDescription: '', familyVisibility: 'Members only',
+  community: 'Maithil community', subCommunity: '', gotra: 'Kashyapa', mool: 'Sakri', ancestralVillage: 'Madhubani', kul: 'Not known', pravara: 'Not applicable', kuldevi: 'Prefer not to disclose', panjiAvailability: 'not-known', maternalLineage: '', culturalVisibility: 'Members only',
+  ageRange: '24–32 years', heightRange: '5 ft 2 in – 6 ft 0 in', educationPreference: 'Graduate or above', professionPreference: 'Stable meaningful work', locationPreference: 'Open to discussion', communityPreference: 'Open to conversation', lifestylePreference: 'Balanced', employmentPreference: 'Professional', relocationPreference: 'Open to discussion', familyPreference: 'Respectful family', gotraPreference: '', moolPreference: '',
 }
 
 export const completionItems = [
@@ -72,7 +72,7 @@ export const completionItems = [
 ]
 
 export const profilePhotos = [
-  { id: 'primary', src: '/images/mitali-profile.png', alt: 'Mitali in warm natural light', primary: true },
+  { id: 'primary', src: '/images/placeholder-user.jpg', alt: 'Profile photograph', primary: true },
   { id: 'gallery-1', src: '', alt: 'Gallery photo placeholder', primary: false },
   { id: 'gallery-2', src: '', alt: 'Gallery photo placeholder', primary: false },
 ]
