@@ -8,11 +8,8 @@ import { useAuth } from '@/lib/auth-context'
 import {
   Users, ShieldCheck, ShieldAlert, Award, PhoneCall, RefreshCw,
   Search, Check, X, Trash2, ArrowLeft, Database, Crown, Heart,
-  Filter, Eye, EyeOff, ExternalLink, AlertTriangle, UserCheck, Lock, LogOut, KeyRound, Sparkles,
-  BarChart3, MessageSquare
+  Filter, Eye, EyeOff, ExternalLink, AlertTriangle, UserCheck, Lock, LogOut, KeyRound, Sparkles
 } from 'lucide-react'
-import AdminAnalyticsPanel from '@/components/admin/AdminAnalyticsPanel'
-import type { AnalyticsRange } from '@/lib/admin-analytics'
 
 export default function AdminPage() {
   const router = useRouter()
@@ -21,8 +18,7 @@ export default function AdminPage() {
   const [data, setData] = useState<any>(null)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'VERIFIED' | 'UNVERIFIED' | 'ACTIVE' | 'BLOCKED'>('ALL')
-  const [activeTab, setActiveTab] = useState<'analytics' | 'members' | 'vip' | 'database'>('analytics')
-  const [analyticsRange, setAnalyticsRange] = useState<AnalyticsRange>('30d')
+  const [activeTab, setActiveTab] = useState<'members' | 'vip' | 'database'>('members')
   const [actionNotice, setActionNotice] = useState('')
 
   // Admin login states
@@ -59,19 +55,13 @@ export default function AdminPage() {
     }
   }
 
-  const loadData = async (rangeOverride?: AnalyticsRange) => {
-    const activeRange = rangeOverride || analyticsRange
+  const loadData = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/stats?range=${encodeURIComponent(activeRange)}`, {
-        credentials: 'same-origin',
-        cache: 'no-store',
-      })
+      const res = await fetch('/api/admin/stats')
       if (res.ok) {
         const json = await res.json()
         setData(json)
-      } else if (res.status === 401 || res.status === 403) {
-        logout()
       }
     } catch (e) {
       console.error('Admin data load error:', e)
@@ -80,18 +70,9 @@ export default function AdminPage() {
     }
   }
 
-  const handleRangeChange = (nextRange: AnalyticsRange) => {
-    setAnalyticsRange(nextRange)
-    loadData(nextRange)
-  }
-
   useEffect(() => {
-    if (mounted && (user?.role === 'ADMIN' || user?.role === 'MODERATOR')) {
-      loadData()
-    } else if (mounted) {
-      setLoading(false)
-    }
-  }, [mounted, user?.role])
+    loadData()
+  }, [])
 
   const handleToggleVerify = async (profileId: string) => {
     try {
@@ -350,7 +331,7 @@ export default function AdminPage() {
 
           <button
             type="button"
-            onClick={() => loadData()}
+            onClick={loadData}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -422,7 +403,7 @@ export default function AdminPage() {
 
       <main style={{ maxWidth: '1380px', margin: '0 auto', padding: '32px 20px 80px' }}>
         {/* KPI Statistics Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(195px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
           <div style={{ background: '#ffffff', borderRadius: '12px', padding: '20px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '8px' }}>
               <span>Total Members</span>
@@ -432,7 +413,7 @@ export default function AdminPage() {
               {data?.stats?.totalProfiles ?? '...'}
             </div>
             <small style={{ color: '#16A34A', fontSize: '11px', fontWeight: 600 }}>
-              {data?.analytics ? `Avg ${data.analytics.overview.avgProfileCompletion}% profile complete` : 'Live in MongoDB Atlas'}
+              Live in MongoDB Atlas
             </small>
           </div>
 
@@ -445,7 +426,7 @@ export default function AdminPage() {
               {data?.stats?.verifiedProfiles ?? '...'}
             </div>
             <small style={{ color: '#64748B', fontSize: '11px' }}>
-              {data?.analytics ? `${data.analytics.overview.verificationRate}% verified · ${data.analytics.overview.unverifiedProfiles} pending` : 'Badge approved by Admin'}
+              Badge approved by Admin
             </small>
           </div>
 
@@ -458,7 +439,7 @@ export default function AdminPage() {
               {data?.stats?.totalVipConsultations ?? 0}
             </div>
             <small style={{ color: '#64748B', fontSize: '11px' }}>
-              {data?.analytics ? `${data.analytics.vipPipeline.newLeads} new · ${data.analytics.vipPipeline.conversionRate}% converted` : 'Milan Select high-intent'}
+              Milan Select high-intent
             </small>
           </div>
 
@@ -471,7 +452,7 @@ export default function AdminPage() {
               {data?.stats?.totalInterests ?? 0}
             </div>
             <small style={{ color: '#64748B', fontSize: '11px' }}>
-              {data?.analytics ? `${data.analytics.funnel.interestsAccepted} accepted (${data.analytics.funnel.interestAcceptanceRate}%)` : 'Mutual expressions'}
+              Mutual expressions
             </small>
           </div>
 
@@ -487,44 +468,10 @@ export default function AdminPage() {
               Saved by families
             </small>
           </div>
-
-          <div style={{ background: '#ffffff', borderRadius: '12px', padding: '20px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '8px' }}>
-              <span>Conversations</span>
-              <MessageSquare size={18} color="#0E7490" />
-            </div>
-            <div style={{ fontSize: '28px', fontWeight: 800, color: '#0E7490' }}>
-              {data?.stats?.totalConversations ?? 0}
-            </div>
-            <small style={{ color: '#64748B', fontSize: '11px' }}>
-              {data?.analytics ? `${data.analytics.overview.totalMessages} messages exchanged` : 'Family dialogues'}
-            </small>
-          </div>
         </div>
 
         {/* Tab Selector */}
-        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('analytics')}
-            style={{
-              padding: '10px 18px',
-              border: 'none',
-              background: 'transparent',
-              fontSize: '14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              color: activeTab === 'analytics' ? '#0B241D' : '#64748B',
-              borderBottom: activeTab === 'analytics' ? '3px solid #0B241D' : '3px solid transparent',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <BarChart3 size={16} />
-            <span>Data Analytics & Insights</span>
-          </button>
-
+        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #E2E8F0', marginBottom: '24px' }}>
           <button
             type="button"
             onClick={() => setActiveTab('members')}
@@ -588,17 +535,6 @@ export default function AdminPage() {
             <span>Atlas DB Diagnostics</span>
           </button>
         </div>
-
-        {/* TAB 0: DATA ANALYTICS & INSIGHTS */}
-        {activeTab === 'analytics' && (
-          <AdminAnalyticsPanel
-            analytics={data?.analytics}
-            range={analyticsRange}
-            onRangeChange={handleRangeChange}
-            onNavigateTab={(tab) => setActiveTab(tab)}
-            loading={loading}
-          />
-        )}
 
         {/* TAB 1: MEMBERS DIRECTORY */}
         {activeTab === 'members' && (

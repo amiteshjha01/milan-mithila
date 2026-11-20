@@ -1,13 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { EditorialNote, PageIntro, PublicShell, SectionTitle } from '@/components/site-shell'
-import { createPublicMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = createPublicMetadata({
-  title: 'Privacy Policy',
+export const metadata: Metadata = {
+  title: 'Privacy Policy | Mithila Milan',
   description: 'Consent-first, DPDP Act 2023 aligned privacy commitments for the Mithila Milan community.',
-  path: '/privacy',
-})
+}
 
 export default function PrivacyPage() {
   return (

@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { ChangeEvent, useMemo, useState, useEffect } from 'react'
 import { Check, ChevronDown, Eye, FileText, Heart, ImagePlus, LockKeyhole, MoreHorizontal, Pencil, Plus, Save, ShieldCheck, Sparkles, Upload, X, LogIn, LogOut, Loader2 } from 'lucide-react'
 import { type Disclosure, type PreferenceMode, type ProfileForm } from '@/lib/mock-profile'
-import { calculateProfileCompletion } from '@/lib/profile-completion'
 import { MobileBottomNav } from '@/components/site-shell'
 import { useAuth } from '@/lib/auth-context'
 import AuthenticatedShell from '@/components/layout/authenticated-shell'
@@ -82,7 +81,7 @@ function PrivacyControl({ value, onChange }: { value: string; onChange: (value: 
 }
 
 function PersonalSection({ form, update }: { form: ProfileForm; update: (name: keyof ProfileForm, value: string) => void }) {
-  return <FormSection eyebrow="The essentials" title="A little about you" description="Start with the details that help someone understand your everyday world."><Field label="Full name" name="fullName" value={form.fullName} onChange={update} /><SelectField label="Gender" name="gender" value={form.gender} options={['Man', 'Woman', 'Non-binary', 'Prefer not to disclose']} onChange={update} /><Field label="Date of birth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={update} /><SelectField label="Height" name="height" value={form.height} options={['4 ft 10 in', '4 ft 11 in', '5 ft 0 in', '5 ft 1 in', '5 ft 2 in', '5 ft 3 in', '5 ft 4 in', '5 ft 5 in', '5 ft 6 in', '5 ft 7 in', '5 ft 8 in', '5 ft 9 in', '5 ft 10 in', '5 ft 11 in', '6 ft 0 in', '6 ft 1 in', '6 ft 2 in', '6 ft 3 in', '6 ft 4 in']} onChange={update} /><SelectField label="Marital status" name="maritalStatus" value={form.maritalStatus} options={['Never married', 'Divorced', 'Widowed', 'Prefer not to disclose']} onChange={update} /><SelectField label="Mother tongue" name="motherTongue" value={form.motherTongue} options={['Maithili', 'Hindi', 'English', 'Other']} onChange={update} /><Field label="Current location" name="currentLocation" value={form.currentLocation} onChange={update} /><Field label="Native district" name="nativeDistrict" value={form.nativeDistrict} onChange={update} /><Field label="Native village" name="nativeVillage" value={form.nativeVillage} onChange={update} optional /><Field label="Country" name="country" value={form.country} onChange={update} /></FormSection>
+  return <FormSection eyebrow="The essentials" title="A little about you" description="Start with the details that help someone understand your everyday world."><Field label="Full name" name="fullName" value={form.fullName} onChange={update} /><SelectField label="Gender" name="gender" value={form.gender} options={['Man', 'Woman', 'Non-binary', 'Prefer not to disclose']} onChange={update} /><Field label="Date of birth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={update} /><SelectField label="Height" name="height" value={form.height} options={['5 ft 2 in', '5 ft 4 in', '5 ft 6 in', '5 ft 8 in', '5 ft 10 in', '6 ft 0 in', '6 ft 2 in']} onChange={update} /><SelectField label="Marital status" name="maritalStatus" value={form.maritalStatus} options={['Never married', 'Divorced', 'Widowed', 'Prefer not to disclose']} onChange={update} /><SelectField label="Mother tongue" name="motherTongue" value={form.motherTongue} options={['Maithili', 'Hindi', 'English', 'Other']} onChange={update} /><Field label="Current location" name="currentLocation" value={form.currentLocation} onChange={update} /><Field label="Native district" name="nativeDistrict" value={form.nativeDistrict} onChange={update} /><Field label="Native village" name="nativeVillage" value={form.nativeVillage} onChange={update} optional /><Field label="Country" name="country" value={form.country} onChange={update} /></FormSection>
 }
 
 function CareerSection({ form, update }: { form: ProfileForm; update: (name: keyof ProfileForm, value: string) => void }) {
@@ -155,7 +154,7 @@ function PreferenceField({ label, name, value, update, mode, optional, help }: {
   return <label className="pm-field pm-preference-field"><span className="pm-label">{label} {optional && <small>Optional</small>}<i className={currentMode}>{currentMode}</i></span><input value={value} onChange={(event) => update(name, event.target.value)} />{help && <small className="pm-help">{help}</small>}<button type="button" className="pm-mode-toggle" onClick={() => setCurrentMode(currentMode === 'strict' ? 'flexible' : 'strict')}>Mark as {currentMode === 'strict' ? 'flexible' : 'strict'}</button></label>
 }
 
-function PreviewSection({ form, photos, profileMeta }: { form: ProfileForm; photos: any[]; profileMeta?: any }) {
+function PreviewSection({ form, photos }: { form: ProfileForm; photos: any[] }) {
   return (
     <section className="pm-preview-section">
       <div className="pm-preview-header">
@@ -173,9 +172,7 @@ function PreviewSection({ form, photos, profileMeta }: { form: ProfileForm; phot
           ) : (
             <Avatar size="large" name={form.fullName} />
           )}
-          <div className="pm-public-photo-label">
-            <ShieldCheck /> {profileMeta?.verified ? 'Verified Member' : profileMeta?.verificationLabel || 'Member Profile'}
-          </div>
+          <div className="pm-public-photo-label"><ShieldCheck /> Verified Member</div>
         </div>
         <div className="pm-public-copy">
           <span className="pm-kicker">Mithila Milan member · {form.currentLocation}</span>
@@ -253,7 +250,7 @@ export default function ProfileApp() {
             setForm({
               fullName: p.fullName || user.name,
               gender: p.gender || 'Man',
-              dateOfBirth: p.dateOfBirth ? String(p.dateOfBirth).slice(0, 10) : '1998-01-01',
+              dateOfBirth: p.dateOfBirth || '1998-01-01',
               height: p.height || '5 ft 6 in',
               maritalStatus: p.maritalStatus || 'Never married',
               motherTongue: p.motherTongue || 'Maithili',
@@ -330,10 +327,58 @@ export default function ProfileApp() {
     setSaved(false)
   }
 
-  const { items: completionItems, percentage: completion } = useMemo(
-    () => calculateProfileCompletion(form, photos),
-    [form, photos]
-  )
+  const completionItems = useMemo(() => {
+    const isPersonalComplete = Boolean(form.fullName && form.gender && form.currentLocation && form.nativeDistrict)
+    const isCareerComplete = Boolean(form.highestQualification && form.occupation)
+    const isFamilyComplete = Boolean(form.familyType && (form.familyValues || form.familyDescription || form.fatherOccupation || form.motherOccupation || form.familyVillage))
+    const isCulturalComplete = Boolean(form.community && form.gotra && form.mool)
+    const isPhotosComplete = Boolean(photos && photos.length > 0 && (photos[0]?.src || photos[0]?.url))
+    const isPreferencesComplete = Boolean(form.ageRange && (form.educationPreference || form.professionPreference || form.locationPreference))
+
+    return [
+      {
+        section: 'personal',
+        label: 'Personal information',
+        detail: isPersonalComplete ? 'Everything looks good' : 'Add basic personal details',
+        complete: isPersonalComplete,
+      },
+      {
+        section: 'career',
+        label: 'Education & career',
+        detail: isCareerComplete ? 'Education & career details verified' : 'Add your education & professional details',
+        complete: isCareerComplete,
+      },
+      {
+        section: 'family',
+        label: 'Family background',
+        detail: isFamilyComplete ? 'Family background recorded' : 'Add your family description',
+        complete: isFamilyComplete,
+      },
+      {
+        section: 'cultural',
+        label: 'Cultural information',
+        detail: isCulturalComplete ? 'Gotra & Mool verified' : 'Add your ancestral Gotra & Mool',
+        complete: isCulturalComplete,
+      },
+      {
+        section: 'photos',
+        label: 'Photos',
+        detail: isPhotosComplete ? `${photos.length} photograph${photos.length > 1 ? 's' : ''} uploaded` : 'Add one more photograph',
+        complete: isPhotosComplete,
+      },
+      {
+        section: 'preferences',
+        label: 'Partner preferences',
+        detail: isPreferencesComplete ? 'A thoughtful beginning' : 'Define your partner preferences',
+        complete: isPreferencesComplete,
+      },
+    ]
+  }, [form, photos])
+
+  const completion = useMemo(() => {
+    const completedCount = completionItems.filter((item) => item.complete).length
+    return Math.round((completedCount / completionItems.length) * 100)
+  }, [completionItems])
 
   const selectSection = (section: Section) => {
     setActive(section)
@@ -491,7 +536,7 @@ export default function ProfileApp() {
             {active === 'cultural' && <CulturalSection form={form} update={update} />}
             {active === 'photos' && <PhotosSection photos={photos} setPhotos={(next) => { setPhotos(next); setDirty(true); setSaved(false) }} />}
             {active === 'preferences' && <PreferencesSection form={form} update={update} />}
-            {active === 'preview' && <PreviewSection form={form} photos={photos} profileMeta={profileMeta} />}
+            {active === 'preview' && <PreviewSection form={form} photos={photos} />}
           </div>
         </main>
 
@@ -540,20 +585,7 @@ function Overview({
   onLogout: () => void
   onLogin: () => void
 }) {
-  const computedAge = (() => {
-    if (form.dateOfBirth) {
-      const d = new Date(form.dateOfBirth)
-      if (!isNaN(d.getTime())) {
-        const now = new Date()
-        let a = now.getUTCFullYear() - d.getUTCFullYear()
-        const m = now.getUTCMonth() - d.getUTCMonth()
-        if (m < 0 || (m === 0 && now.getUTCDate() < d.getUTCDate())) a--
-        if (a >= 18 && a <= 100) return a
-      }
-    }
-    return profileMeta?.age || 27
-  })()
-  const age = computedAge
+  const age = profileMeta?.age || 27
   const height = form.height || '5 ft 6 in'
   const location = form.currentLocation || 'Patna, Bihar'
 

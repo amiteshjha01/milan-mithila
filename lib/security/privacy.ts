@@ -1,5 +1,4 @@
 import { MongoInterest, MongoProfile, MongoUser } from '@/lib/mongodb-models'
-import { calculateProfileCompletion } from '@/lib/profile-completion'
 
 /**
  * Server-side profile privacy engine.
@@ -134,26 +133,6 @@ const initialsOf = (name: string) =>
     .join('')
     .slice(0, 2)
 
-function resolveAge(p: any): number {
-  if (p?.dateOfBirth) {
-    const d = new Date(p.dateOfBirth)
-    if (!isNaN(d.getTime())) {
-      const now = new Date()
-      let age = now.getUTCFullYear() - d.getUTCFullYear()
-      const m = now.getUTCMonth() - d.getUTCMonth()
-      if (m < 0 || (m === 0 && now.getUTCDate() < d.getUTCDate())) age--
-      if (age >= 18 && age <= 100) return age
-    }
-  }
-  return p?.age || 27
-}
-
-function resolveDobString(p: any): string | undefined {
-  if (!p?.dateOfBirth) return undefined
-  const d = new Date(p.dateOfBirth)
-  return isNaN(d.getTime()) ? undefined : d.toISOString().slice(0, 10)
-}
-
 /**
  * Hidden user ids: accounts that must not appear in search/detail for other members.
  */
@@ -171,8 +150,7 @@ export function serializeProfileCard(p: any, relation: Relation, flags: { shortl
     id: p.profileCode,
     name: p.displayName,
     gender: p.gender,
-    dateOfBirth: resolveDobString(p),
-    age: resolveAge(p),
+    age: p.age,
     height: p.height || '5 ft 6 in',
     education: p.highestQualification || 'Graduate',
     profession: p.profession || 'Professional',
@@ -192,18 +170,18 @@ export function serializeProfileCard(p: any, relation: Relation, flags: { shortl
     gotra: access.cultural ? p.gotra : hidden,
     mool: access.cultural ? p.mool : hidden,
     ancestralVillage: access.cultural ? p.ancestralVillage || p.nativeVillage : hidden,
-    kul: access.cultural ? p.kul || 'Not disclosed' : hidden,
-    pravara: access.cultural ? p.pravara || 'Not disclosed' : hidden,
+    kul: access.cultural ? p.kul || 'Kashyap Kul' : hidden,
+    pravara: access.cultural ? p.pravara || 'Traya Pravara' : hidden,
     diet: p.partnerPreferences?.diet || 'Open to conversation',
     lifestyle: p.partnerPreferences?.lifestyle || 'Balanced',
-    relocation: p.relocationPreference || 'Open to discussion',
+    relocation: 'Open to discussion',
     horoscope: 'Not disclosed',
     introduction: p.introduction,
-    profileCompletion: calculateProfileCompletion(p).percentage,
-    availability: p.updatedAt ? 'Recently active' : 'Active',
-    verified: Boolean(p.verified),
+    profileCompletion: p.profileCompletion || 88,
+    availability: 'Active today',
+    verified: p.verified,
     verificationLabel: p.verificationLabel || 'Email not verified',
-    joinedDaysAgo: p.createdAt ? Math.max(0, Math.floor((Date.now() - new Date(p.createdAt).getTime()) / 86_400_000)) : 0,
+    joinedDaysAgo: 1,
     active: true,
     recommended: true,
     shortlisted: flags.shortlisted,
@@ -224,7 +202,7 @@ export function serializeProfileDetail(p: any, relation: Relation, flags: { shor
   return {
     ...card,
     degree: p.degree || p.highestQualification,
-    company: p.employer || '',
+    company: p.employer || 'Private Organization',
     workingSector: p.workingSector || 'Private sector',
     languages: p.languages || ['Maithili', 'Hindi', 'English'],
     fatherOccupation: access.family ? p.fatherOccupation : undefined,

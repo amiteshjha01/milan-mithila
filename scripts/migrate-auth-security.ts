@@ -19,7 +19,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { connectMongo } from '../lib/mongodb'
 import { MongoUser, MongoProfile, MongoInterest, MongoShortlist, MongoConversation, MongoSession } from '../lib/mongodb-models'
-import { hashPassword, isArgon2idHash } from '../lib/security/password'
+import { isArgon2idHash } from '../lib/security/password'
 import { normalizeLevel } from '../lib/security/privacy'
 
 try {
@@ -62,25 +62,7 @@ async function main() {
   }
 
   for (const u of legacy) {
-    const full: any = await MongoUser.findById(u._id).select('+passwordHash')
-    if (full?.passwordHash && !isArgon2idHash(full.passwordHash)) {
-      const upgraded = await hashPassword(full.passwordHash)
-      await MongoUser.updateOne(
-        { _id: u._id },
-        {
-          $set: { passwordHash: upgraded, mustResetPassword: false, passwordChangedAt: new Date(), failedLoginCount: 0 },
-          $unset: { lockedUntil: 1, resetPasswordToken: 1, resetPasswordExpires: 1 },
-        }
-      )
-    } else {
-      await MongoUser.updateOne(
-        { _id: u._id },
-        {
-          $set: { mustResetPassword: false, failedLoginCount: 0 },
-          $unset: { lockedUntil: 1, resetPasswordToken: 1, resetPasswordExpires: 1 },
-        }
-      )
-    }
+    await MongoUser.updateOne({ _id: u._id }, { $set: { mustResetPassword: true }, $unset: { passwordHash: 1, resetPasswordToken: 1, resetPasswordExpires: 1 } })
   }
   await MongoSession.updateMany({ revokedAt: { $exists: false } }, { $set: { revokedAt: new Date(), revokedReason: 'security_migration' } })
 

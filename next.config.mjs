@@ -36,24 +36,6 @@ const nextConfig = {
         ],
       },
       { source: '/api/(.*)', headers: [{ key: 'Cache-Control', value: 'no-store' }] },
-      {
-        source: '/llms.txt',
-        headers: [
-          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
-          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' },
-        ],
-      },
-      {
-        source: '/llms-full.txt',
-        headers: [
-          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
-          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' },
-        ],
-      },
-      {
-        source: '/images/(.*)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],
-      },
     ]
   },
 }

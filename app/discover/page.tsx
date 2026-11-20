@@ -1,12 +1,5 @@
-import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import DiscoverApp from '@/components/discover/discover-app'
-import { createNoIndexMetadata } from '@/lib/seo'
-
-export const metadata: Metadata = createNoIndexMetadata(
-  'Discover Matches',
-  'Private member discovery feed on Mithila Milan.'
-)
 
 export default function DiscoverPage() {
   return (

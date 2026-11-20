@@ -1,13 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { EditorialNote, PageIntro, PublicShell, SectionTitle } from '@/components/site-shell'
-import { createPublicMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = createPublicMetadata({
-  title: 'Terms of Service',
-  description: 'Community standards, eligibility, anti-dowry enforcement, and terms of service for Mithila Milan members.',
-  path: '/terms',
-})
+export const metadata: Metadata = {
+  title: 'Terms of Service | Mithila Milan',
+  description: 'Community standards, safety obligations, and terms of service for Mithila Milan members.',
+}
 
 export default function TermsPage() {
   return (

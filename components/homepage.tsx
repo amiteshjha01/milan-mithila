@@ -46,17 +46,17 @@ const steps = [
 ]
 
 const nativeDistricts = [
-  { key: 'darbhanga', name: 'Darbhanga (दरभंगा)' },
-  { key: 'madhubani', name: 'Madhubani (मधुबनी)' },
-  { key: 'samastipur', name: 'Samastipur (समस्तीपुर)' },
-  { key: 'saharsa', name: 'Saharsa (सहरसा)' },
-  { key: 'sitamarhi', name: 'Sitamarhi (सीतामढ़ी)' },
-  { key: 'janakpur', name: 'Janakpur Dham (जनकपुर धाम)' },
-  { key: 'muzaffarpur', name: 'Muzaffarpur (मुजफ्फरपुर)' },
-  { key: 'supaul', name: 'Supaul (सुपौल)' },
-  { key: 'begusarai', name: 'Begusarai (बेगूसराय)' },
-  { key: 'delhi', name: 'Delhi NCR & Bengaluru' },
-  { key: 'diaspora', name: 'Global Diaspora (USA/UK)' },
+  { name: 'Darbhanga (दरभंगा)', count: '140+ profiles' },
+  { name: 'Madhubani (मधुबनी)', count: '185+ profiles' },
+  { name: 'Samastipur (समस्तीपुर)', count: '92+ profiles' },
+  { name: 'Saharsa (सहरसा)', count: '76+ profiles' },
+  { name: 'Sitamarhi (सीतामढ़ी)', count: '64+ profiles' },
+  { name: 'Janakpur Dham (जनकपुर धाम)', count: '58+ profiles' },
+  { name: 'Muzaffarpur (मुजफ्फरपुर)', count: '80+ profiles' },
+  { name: 'Supaul (सुपौल)', count: '45+ profiles' },
+  { name: 'Begusarai (बेगूसराय)', count: '52+ profiles' },
+  { name: 'Delhi NCR & Bengaluru', count: '210+ profiles' },
+  { name: 'Global Diaspora (USA/UK)', count: '65+ profiles' },
 ]
 
 const testimonials = [
@@ -93,18 +93,6 @@ export default function Homepage() {
   const [gotra, setGotra] = useState('all')
   const [location, setLocation] = useState('all')
   const [spotlightProfiles, setSpotlightProfiles] = useState<any[]>([])
-  const [districtCounts, setDistrictCounts] = useState<Record<string, number>>({})
-
-  useEffect(() => {
-    fetch('/api/stats/public')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.districts && typeof data.districts === 'object') {
-          setDistrictCounts(data.districts)
-        }
-      })
-      .catch(() => {})
-  }, [])
 
   useEffect(() => {
     const target = seeking === 'bride' ? 'Woman' : 'Man'
@@ -629,24 +617,17 @@ export default function Homepage() {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '28px' }}>
-          {nativeDistricts.map((d) => {
-            const liveCount = districtCounts[d.key] || 0
-            return (
-              <Link
-                key={d.name}
-                href={`/discover?nativeDistrict=${encodeURIComponent(d.name.split(' ')[0])}`}
-                className="district-pill"
-              >
-                <MapPin size={13} color="var(--terracotta)" />
-                <span>{d.name}</span>
-                {liveCount > 0 && (
-                  <small style={{ opacity: 0.65, fontWeight: 500 }}>
-                    ({liveCount} {liveCount === 1 ? 'profile' : 'profiles'})
-                  </small>
-                )}
-              </Link>
-            )
-          })}
+          {nativeDistricts.map((d) => (
+            <Link
+              key={d.name}
+              href={`/discover?nativeDistrict=${encodeURIComponent(d.name.split(' ')[0])}`}
+              className="district-pill"
+            >
+              <MapPin size={13} color="var(--terracotta)" />
+              <span>{d.name}</span>
+              <small style={{ opacity: 0.65, fontWeight: 500 }}>({d.count})</small>
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -5,7 +5,6 @@ import { generateProfileCode } from '@/lib/accounts'
 import { authenticate, fail, readJson, serverError } from '@/lib/security/guard'
 import { normalizeLevel } from '@/lib/security/privacy'
 import { isSafeImageUrl } from '@/lib/security/images'
-import { calculateProfileCompletion } from '@/lib/profile-completion'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,24 +57,6 @@ const bodySchema = z.object({ form: formSchema })
 
 const PHOTO_LEVELS: Record<string, string> = { PUBLIC: 'PUBLIC', MEMBERS_ONLY: 'MEMBERS_ONLY', MUTUAL_CONSENT: 'MUTUAL_CONSENT' }
 
-export function computeAgeFromDob(dob: unknown, fallback = 27): number {
-  if (!dob) return fallback
-  const d = new Date(dob as string | Date)
-  if (isNaN(d.getTime())) return fallback
-  const today = new Date()
-  let age = today.getUTCFullYear() - d.getUTCFullYear()
-  const m = today.getUTCMonth() - d.getUTCMonth()
-  if (m < 0 || (m === 0 && today.getUTCDate() < d.getUTCDate())) age--
-  return age >= 18 && age <= 100 ? age : fallback
-}
-
-export function formatDobIsoDate(dob: unknown): string {
-  if (!dob) return '1998-01-01'
-  const d = new Date(dob as string | Date)
-  if (isNaN(d.getTime())) return '1998-01-01'
-  return d.toISOString().slice(0, 10)
-}
-
 export async function GET(request: Request) {
   try {
     // Identity comes only from the session. Any ?userId= / ?email= is ignored.
@@ -85,29 +66,18 @@ export async function GET(request: Request) {
     if (!user) return fail(401, 'Authentication required.')
 
     let profile: any = await MongoProfile.findOne({ userId: user._id }).lean()
-    if (!profile && (user.role === 'ADMIN' || user.role === 'MODERATOR')) {
-      return NextResponse.json({
-        ok: true,
-        user: { id: String(user._id), name: user.name, email: user.email, role: user.role, isVerified: user.isVerified },
-        profile: null,
-      })
-    }
     if (!profile) {
-      const initialProfile = {
-        userId: user._id,
-        profileCode: await generateProfileCode(),
-        displayName: user.name,
-        gender: 'Prefer not to disclose',
-        age: 27, height: '5 ft 6 in', maritalStatus: 'Never married', motherTongue: 'Maithili',
-        currentCity: 'Patna', currentState: 'Bihar', country: 'India', nativeDistrict: 'Madhubani',
-        highestQualification: 'Postgraduate', profession: 'Professional', workingSector: 'Private sector',
-        introduction: `Namaskar. I am ${user.name}.`,
-        verified: false, verificationLabel: 'Email not verified',
-      }
       profile = (
         await MongoProfile.create({
-          ...initialProfile,
-          profileCompletion: calculateProfileCompletion(initialProfile).percentage,
+          userId: user._id,
+          profileCode: await generateProfileCode(),
+          displayName: user.name,
+          gender: 'Prefer not to disclose',
+          age: 27, height: '5 ft 6 in', maritalStatus: 'Never married', motherTongue: 'Maithili',
+          currentCity: 'Patna', currentState: 'Bihar', country: 'India', nativeDistrict: 'Madhubani',
+          highestQualification: 'Postgraduate', profession: 'Professional', workingSector: 'Private sector',
+          introduction: `Namaskar. I am ${user.name}.`,
+          verified: false, verificationLabel: 'Email not verified', profileCompletion: 80,
         })
       ).toObject()
     }
@@ -123,8 +93,8 @@ export async function GET(request: Request) {
         profileCode: profile.profileCode,
         fullName: profile.displayName || user.name,
         gender: profile.gender || 'Man',
-        dateOfBirth: formatDobIsoDate(profile.dateOfBirth),
-        age: profile.dateOfBirth ? computeAgeFromDob(profile.dateOfBirth, profile.age || 27) : profile.age || 27,
+        dateOfBirth: profile.dateOfBirth || '1998-01-01',
+        age: profile.age || 27,
         height: profile.height || '5 ft 6 in',
         maritalStatus: profile.maritalStatus || 'Never married',
         motherTongue: profile.motherTongue || 'Maithili',
@@ -175,8 +145,8 @@ export async function GET(request: Request) {
         gotraPreference: profile.partnerPreferences?.gotraPreference || '',
         moolPreference: profile.partnerPreferences?.moolPreference || '',
         photos: profile.photos || [],
-        profileCompletion: calculateProfileCompletion(profile).percentage,
-        verified: Boolean(profile.verified),
+        profileCompletion: profile.profileCompletion || 85,
+        verified: profile.verified,
         verificationLabel: profile.verificationLabel || 'Email not verified',
       },
     })
@@ -207,11 +177,7 @@ export async function POST(request: Request) {
     put('displayName', form.fullName || undefined)
     put('gender', form.gender && ['Woman', 'Man', 'Non-binary', 'Prefer not to disclose'].includes(form.gender) ? form.gender : undefined)
     put('dateOfBirth', form.dateOfBirth ? new Date(form.dateOfBirth) : undefined)
-    if (set.dateOfBirth && isNaN(set.dateOfBirth.getTime())) {
-      delete set.dateOfBirth
-    } else if (set.dateOfBirth) {
-      set.age = computeAgeFromDob(set.dateOfBirth, existing.age || 27)
-    }
+    if (set.dateOfBirth && isNaN(set.dateOfBirth.getTime())) delete set.dateOfBirth
     put('height', form.height); put('maritalStatus', form.maritalStatus); put('motherTongue', form.motherTongue)
     if (form.currentLocation) {
       put('currentCity', form.currentLocation.split(',')[0]?.trim() || form.currentLocation)
@@ -268,13 +234,7 @@ export async function POST(request: Request) {
       }
       set.photos = photos
     }
-    const mergedForCompletion = {
-      ...existing,
-      ...set,
-      partnerPreferences: set.partnerPreferences || existing.partnerPreferences,
-      photos: set.photos ?? existing.photos,
-    }
-    set.profileCompletion = calculateProfileCompletion(mergedForCompletion).percentage
+    set.profileCompletion = 90
 
     if (set.displayName && set.displayName !== user.name) await MongoUser.updateOne({ _id: user._id }, { name: set.displayName })
 
@@ -283,12 +243,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      profile: {
-        id: String(updated._id),
-        profileCode: updated.profileCode,
-        displayName: updated.displayName,
-        profileCompletion: updated.profileCompletion,
-      },
+      profile: { id: String(updated._id), profileCode: updated.profileCode, displayName: updated.displayName },
       user: {
         id: String(user._id), name: updated.displayName || user.name, email: user.email, role: user.role,
         avatar: primary, gender: updated.gender, isVerified: user.isVerified,

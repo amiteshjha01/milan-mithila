@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { connectMongo } from '@/lib/mongodb'
 import { MongoUser, MongoProfile } from '@/lib/mongodb-models'
 import { createMember, publicUser } from '@/lib/accounts'
-import { burnPasswordCheck, hashPassword, verifyPassword } from '@/lib/security/password'
+import { burnPasswordCheck, verifyPassword } from '@/lib/security/password'
 import { createSession, revokeAllUserSessions } from '@/lib/security/session'
 import { verifyGoogleIdToken, GoogleAuthNotConfiguredError } from '@/lib/security/google'
 import { applySessionCookie, fail, getClientIp, isSameOriginRequest, readJson, serverError } from '@/lib/security/guard'
@@ -85,36 +85,15 @@ export async function POST(request: Request) {
       if (user.lockedUntil && new Date(user.lockedUntil).getTime() > Date.now()) {
         return fail(429, 'Too many attempts. Please try again later.')
       }
-      // Pre-remediation member accounts created before `passwordHash` existed in userSchema have
-      // `passwordHash === undefined`. On their first login, bind and hash their password with Argon2id.
-      if (!user.passwordHash && user.authProvider !== 'GOOGLE' && !user.googleSub) {
-        const migratedHash = await hashPassword(d.password)
-        user.passwordHash = migratedHash
-        await MongoUser.updateOne(
-          { _id: user._id },
-          {
-            $set: {
-              passwordHash: migratedHash,
-              authProvider: 'CREDENTIALS',
-              mustResetPassword: false,
-              passwordChangedAt: new Date(),
-              failedLoginCount: 0,
-              lastActiveAt: new Date(),
-            },
-            $unset: { lockedUntil: 1 },
-          }
-        )
-      } else {
-        const ok = await verifyPassword(user.passwordHash, d.password)
-        if (!ok) {
-          const updated: any = await MongoUser.findByIdAndUpdate(user._id, { $inc: { failedLoginCount: 1 } }, { returnDocument: 'after' })
-          if (updated && updated.failedLoginCount >= MAX_FAILED) {
-            await MongoUser.updateOne({ _id: user._id }, { $set: { lockedUntil: new Date(Date.now() + LOCK_MS), failedLoginCount: 0 } })
-          }
-          return fail(401, INVALID)
+      const ok = await verifyPassword(user.passwordHash, d.password)
+      if (!ok) {
+        const updated: any = await MongoUser.findByIdAndUpdate(user._id, { $inc: { failedLoginCount: 1 } }, { returnDocument: 'after' })
+        if (updated && updated.failedLoginCount >= MAX_FAILED) {
+          await MongoUser.updateOne({ _id: user._id }, { $set: { lockedUntil: new Date(Date.now() + LOCK_MS), failedLoginCount: 0 } })
         }
-        await MongoUser.updateOne({ _id: user._id }, { $set: { failedLoginCount: 0, lastActiveAt: new Date() }, $unset: { lockedUntil: 1 } })
+        return fail(401, INVALID)
       }
+      await MongoUser.updateOne({ _id: user._id }, { $set: { failedLoginCount: 0, lastActiveAt: new Date() }, $unset: { lockedUntil: 1 } })
     }
 
     if (user.accountStatus === 'BLOCKED' || user.accountStatus === 'PENDING_REVIEW') {

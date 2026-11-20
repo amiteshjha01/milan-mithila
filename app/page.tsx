@@ -1,37 +1,45 @@
-import type { Metadata } from 'next'
-import { HomeGate } from '@/components/home-gate'
-import { JsonLd } from '@/components/seo/json-ld'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, buildFaqJsonLd } from '@/lib/seo'
+'use client'
 
-export const metadata: Metadata = {
-  title: `${SITE_NAME} — ${SITE_TAGLINE}`,
-  description: SITE_DESCRIPTION,
-  alternates: { canonical: '/' },
-}
-
-const HOME_FAQS = [
-  {
-    question: 'Who is Mithila Milan built for?',
-    answer:
-      'Mithila Milan is built for adult Maithil individuals and families across Darbhanga, Madhubani, Samastipur, Saharsa, Sitamarhi, Janakpur Dham, Indian metros, and the global diaspora looking for respectful, consent-first matrimonial introductions.',
-  },
-  {
-    question: 'Are Gotra and Mool mandatory to create a profile?',
-    answer:
-      'No. Cultural details such as Gotra, Mool, and native district are completely voluntary and come with granular privacy controls so you choose what to share and with whom.',
-  },
-  {
-    question: 'How does Mithila Milan protect member privacy?',
-    answer:
-      'Mithila Milan follows DPDP Act 2023 principles: phone numbers and contact details are never displayed publicly, conversations open only on mutual interest, and member profiles are blocked from search engine indexing.',
-  },
-]
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
+import Homepage from '@/components/homepage'
 
 export default function Page() {
-  return (
-    <>
-      <JsonLd data={buildFaqJsonLd(HOME_FAQS)} />
-      <HomeGate />
-    </>
-  )
+  const router = useRouter()
+  const { user, mounted } = useAuth()
+
+  useEffect(() => {
+    if (mounted && user) {
+      router.replace('/dashboard')
+    }
+  }, [mounted, user, router])
+
+  if (mounted && user) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0B241D', color: '#FAF9F6' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              border: '2px solid rgba(212,175,55,0.3)',
+              borderTopColor: '#D4AF37',
+              animation: 'spin 0.8s linear infinite',
+              margin: '0 auto 16px',
+            }}
+          />
+          <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '22px', margin: '0 0 6px', color: '#FAF9F6' }}>
+            Mithila <em>Milan</em>
+          </h2>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+            Redirecting to your member dashboard...
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return <Homepage />
 }

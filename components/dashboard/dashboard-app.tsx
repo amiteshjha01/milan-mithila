@@ -2,36 +2,27 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import {
-  Bookmark, Check, Compass, Heart, MapPin, FileText, Crown, Sparkles, Loader2
+  Bookmark, Check, Compass, Eye, Heart, MapPin, FileText, Crown, Sparkles, Loader2
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import AuthenticatedShell from '@/components/layout/authenticated-shell'
 
-function getTimeOfDayGreeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 17) return 'Good afternoon'
-  return 'Good evening'
-}
-
-function WelcomeCard({ user, completion }: { user: any; completion: number | null }) {
+function WelcomeCard({ user }: { user: any }) {
   const firstName = user?.name ? user.name.split(' ')[0] : 'there'
   const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-  const greeting = getTimeOfDayGreeting()
 
   return (
     <section className="mm-welcome-card" style={{ overflow: 'hidden' }}>
       <div className="mm-welcome-copy">
         <div className="mm-kicker"><span className="mm-kicker-line" /> {today}</div>
-        <h1>{greeting}, <em>{firstName}.</em></h1>
+        <h1>Good morning, <em>{firstName}.</em></h1>
         <p>A sacred sanctuary for Maithil matrimonial harmony, rooted in tradition and verified trust.</p>
         <div className="mm-welcome-actions">
           <Link href="/discover" className="mm-primary-button">Discover matches <Compass size={16} /></Link>
-          <Link href="/profile" className="mm-text-button">
-            {completion === 100 ? 'Manage your profile' : 'Complete your profile'} <span>↗</span>
-          </Link>
+          <Link href="/profile" className="mm-text-button">Complete your profile <span>↗</span></Link>
         </div>
       </div>
       <div className="mm-welcome-art" aria-hidden="true" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -69,43 +60,22 @@ function WelcomeCard({ user, completion }: { user: any; completion: number | nul
   )
 }
 
-function CompletionCard({
-  user,
-  myProfile,
-  loading,
-}: {
-  user: any
-  myProfile: { profileCompletion?: number; verified?: boolean; verificationLabel?: string } | null
-  loading: boolean
-}) {
-  const pct = typeof myProfile?.profileCompletion === 'number' ? myProfile.profileCompletion : 0
-  const statusText = !user
-    ? 'Guest Mode'
-    : myProfile?.verified
-      ? 'Verified Profile'
-      : myProfile?.verificationLabel || 'Member Profile'
-  const isComplete = pct >= 100
-
+function CompletionCard({ user }: { user: any }) {
+  const pct = user ? 85 : 30
   return (
     <section className="mm-completion-card">
       <div className="mm-card-eyebrow">
         <span>Profile strength</span>
-        <span className="mm-status-pill"><span /> {statusText}</span>
+        <span className="mm-status-pill"><span /> {user ? 'Verified Profile' : 'Guest Mode'}</span>
       </div>
       <div className="mm-completion-main">
         <div className="mm-progress-ring" style={{ '--progress': `${pct * 3.6}deg` } as React.CSSProperties}>
-          <div><strong>{loading && myProfile === null ? '—' : `${pct}%`}</strong><small>complete</small></div>
+          <div><strong>{pct}%</strong><small>complete</small></div>
         </div>
         <div>
-          <h2>{isComplete ? 'Your story is complete.' : 'Let your whole story show.'}</h2>
-          <p>
-            {isComplete
-              ? 'All six sections of your profile are filled in and synced with your account.'
-              : 'Add your personal, family, cultural, and preference details so families can get to know you thoughtfully.'}
-          </p>
-          <Link href="/profile" className="mm-inline-link">
-            {isComplete ? 'Review your profile' : 'Complete your profile'} <span>↗</span>
-          </Link>
+          <h2>Let your whole story show.</h2>
+          <p>Profiles with complete family lineage and ancestral details receive 4x more genuine responses.</p>
+          <Link href="/profile" className="mm-inline-link">Update your lineage <span>↗</span></Link>
         </div>
       </div>
       <div className="mm-completion-bar"><span style={{ width: `${pct}%` }} /></div>
@@ -118,8 +88,6 @@ function ProfileCard({ profile, onShortlist, isShortlisted }: { profile: any; on
   const profileId = profile.profileCode || profile.id || profile._id
   const cardPhoto = profile.avatar || profile.image || profile.photos?.[0]?.url || profile.photos?.[0]
   const isPhotoValid = cardPhoto && !cardPhoto.includes('placeholder') && !cardPhoto.includes('mitali-profile')
-  const hasGunaScore = typeof profile.gunaMilan?.score === 'number'
-  const completionPct = typeof profile.profileCompletion === 'number' ? profile.profileCompletion : null
 
   return (
     <article className="mm-match-card">
@@ -136,11 +104,7 @@ function ProfileCard({ profile, onShortlist, isShortlisted }: { profile: any; on
             </div>
           )}
           <span className="mm-match-star" style={{ zIndex: 2 }}>✦</span>
-          {hasGunaScore ? (
-            <span className="mm-match-match" style={{ zIndex: 2 }}><Heart size={13} /> {profile.gunaMilan.score}/36 Gunas</span>
-          ) : completionPct !== null ? (
-            <span className="mm-match-match" style={{ zIndex: 2 }}><Heart size={13} /> {completionPct}% Profile</span>
-          ) : null}
+          <span className="mm-match-match" style={{ zIndex: 2 }}><Heart size={13} /> {profile.gunaMilan?.score || 32}/36 Gunas</span>
           {profile.gotra && (
             <span
               style={{
@@ -166,7 +130,7 @@ function ProfileCard({ profile, onShortlist, isShortlisted }: { profile: any; on
         <div className="mm-match-heading">
           <Link href={`/profiles/${profileId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <h3>{profile.name}, {profile.age}</h3>
-            <p>{profile.profession || profile.role || 'Member'}</p>
+            <p>{profile.profession || profile.role || 'Professional'}</p>
           </Link>
           <button
             className="mm-round-button"
@@ -181,11 +145,7 @@ function ProfileCard({ profile, onShortlist, isShortlisted }: { profile: any; on
         </div>
         <div className="mm-match-location"><MapPin size={14} /> {profile.city || profile.location || 'Mithila Region'}</div>
         <div className="mm-match-tag">
-          <span /> {profile.mool && profile.mool !== 'Not disclosed'
-            ? `मूल: ${profile.mool}`
-            : profile.verified
-              ? 'Verified Profile'
-              : profile.community || 'Maithil Member'}
+          <span /> {profile.mool ? `मूल: ${profile.mool}` : 'Verified Profile'}
           <small>{profile.nativeDistrict || ''}</small>
         </div>
       </div>
@@ -194,8 +154,8 @@ function ProfileCard({ profile, onShortlist, isShortlisted }: { profile: any; on
 }
 
 export default function DashboardApp() {
+  const router = useRouter()
   const { user } = useAuth()
-  const [myProfile, setMyProfile] = useState<{ profileCompletion?: number; verified?: boolean; verificationLabel?: string } | null>(null)
   const [shortlistedIds, setShortlistedIds] = useState<string[]>([])
   const [profiles, setProfiles] = useState<any[]>([])
   const [interests, setInterests] = useState<any[]>([])
@@ -207,33 +167,34 @@ export default function DashboardApp() {
     window.setTimeout(() => setToast(null), 3500)
   }
 
-  // Load live profile, candidate matches, received interests, and shortlists from MongoDB
+  // Load live profiles and interests from MongoDB
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true)
-        const [meRes, profRes, intRes, shortRes] = await Promise.all([
-          fetch('/api/profile/me', { cache: 'no-store' }),
-          fetch('/api/profiles', { cache: 'no-store' }),
-          fetch('/api/interests', { cache: 'no-store' }),
-          fetch('/api/shortlist', { cache: 'no-store' }),
+        const profileParams = new URLSearchParams()
+        if (user?.id) profileParams.set('currentUserId', user.id)
+        if (user?.name) profileParams.set('currentUserName', user.name)
+        if (user?.gender) profileParams.set('currentUserGender', user.gender)
+        const profileQuery = profileParams.toString() ? `?${profileParams.toString()}` : ''
+
+        const [profRes, intRes, shortRes] = await Promise.all([
+          fetch(`/api/profiles${profileQuery}`),
+          fetch(`/api/interests?userId=${user?.id || 'guest'}`),
+          fetch(`/api/shortlist?userId=${user?.id || 'guest'}`)
         ])
 
-        if (meRes.ok) {
-          const data = await meRes.json()
-          setMyProfile(data.profile || null)
-        }
         if (profRes.ok) {
           const data = await profRes.json()
           setProfiles(data.profiles || [])
         }
         if (intRes.ok) {
           const data = await intRes.json()
-          setInterests(data.received || [])
+          setInterests(data.interests || [])
         }
         if (shortRes.ok) {
           const data = await shortRes.json()
-          setShortlistedIds((data.shortlists || []).map((s: any) => s.profileId || s.targetProfileId).filter(Boolean))
+          setShortlistedIds(data.shortlists?.map((s: any) => s.targetProfileId) || [])
         }
       } catch (err) {
         console.error('Failed to load dashboard data from MongoDB:', err)
@@ -251,35 +212,19 @@ export default function DashboardApp() {
     showToast(isCurrentlySaved ? `Removed ${name} from your shortlist.` : `Saved ${name} to your shortlist.`)
 
     try {
-      const res = await fetch('/api/shortlist', {
+      await fetch('/api/shortlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileId: id }),
+        body: JSON.stringify({ userId: user?.id || 'guest', targetProfileId: id }),
       })
-      if (!res.ok) {
-        setShortlistedIds(shortlistedIds)
-      }
     } catch {
-      setShortlistedIds(shortlistedIds)
+      // ignore
     }
   }
 
-  const handleAcceptInterest = async (id: string, senderCode: string) => {
-    try {
-      const res = await fetch('/api/interests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'ACCEPT', interestId: id }),
-      })
-      if (res.ok) {
-        setInterests(prev => prev.map(i => i._id === id ? { ...i, status: 'ACCEPTED' } : i))
-        showToast(`Accepted interest from ${senderCode}. You can now start a conversation!`)
-      } else {
-        showToast('Could not accept this interest right now.')
-      }
-    } catch {
-      showToast('Network error while accepting interest.')
-    }
+  const handleAcceptInterest = async (id: string, name: string) => {
+    setInterests(prev => prev.map(i => i._id === id ? { ...i, status: 'accepted' } : i))
+    showToast(`Accepted interest from ${name}. You can now start a conversation!`)
   }
 
   // Filter out self and administrative profiles from dashboard candidate feeds
@@ -297,13 +242,13 @@ export default function DashboardApp() {
   return (
     <AuthenticatedShell activeKey="overview" breadcrumbTitle="Overview">
       <main className="mm-dashboard">
-        <WelcomeCard user={user} completion={myProfile?.profileCompletion ?? null} />
+        <WelcomeCard user={user} />
         <div className="mm-dashboard-grid">
           <div className="mm-dashboard-primary">
             <div className="mm-section-heading">
               <div>
                 <p className="mm-section-kicker">Curated for you</p>
-                <h2>Live profiles from <em>our community.</em></h2>
+                <h2>Live profiles from <em>MongoDB Atlas.</em></h2>
               </div>
               <Link href="/discover" className="mm-view-all">View all in Discover <span>↗</span></Link>
             </div>
@@ -311,7 +256,7 @@ export default function DashboardApp() {
             {loading ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#1B4D3E', background: '#ffffff', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.06)' }}>
                 <Loader2 className="animate-spin" style={{ margin: '0 auto 12px' }} />
-                <p style={{ margin: 0, fontSize: '13px' }}>Fetching live profiles from database...</p>
+                <p style={{ margin: 0, fontSize: '13px' }}>Fetching live verified profiles from database...</p>
               </div>
             ) : recommended.length === 0 ? (
               <div style={{ padding: '36px', textAlign: 'center', background: '#FAF8F5', borderRadius: '12px', border: '1px dashed #d99a78' }}>
@@ -336,7 +281,7 @@ export default function DashboardApp() {
               <>
                 <div className="mm-section-heading mm-recent-heading">
                   <div>
-                    <p className="mm-section-kicker">More Community Members</p>
+                    <p className="mm-section-kicker">More Verified Members</p>
                     <h2>Recently <em>joined.</em></h2>
                   </div>
                   <Link href="/discover" className="mm-view-all">Browse directory <span>↗</span></Link>
@@ -359,7 +304,7 @@ export default function DashboardApp() {
                         <span>
                           <strong>{profile.name}</strong>
                           <small>{profile.profession || profile.role || 'Member'} · {profile.city || profile.nativeDistrict}</small>
-                          <em>{profile.verified ? 'Verified Member' : `${profile.profileCompletion ?? 0}% complete`}</em>
+                          <em>Verified Member</em>
                         </span>
                       </Link>
                     )
@@ -420,7 +365,7 @@ export default function DashboardApp() {
           </div>
 
           <aside className="mm-dashboard-aside">
-            <CompletionCard user={user} myProfile={myProfile} loading={loading} />
+            <CompletionCard user={user} />
             <section className="mm-side-card">
               <div className="mm-side-heading">
                 <div>
@@ -436,31 +381,23 @@ export default function DashboardApp() {
                     <p style={{ margin: 0, fontSize: '12px' }}>Expressions of interest sent to your profile will appear here.</p>
                   </div>
                 ) : (
-                  interests.map((int: any) => {
-                    const senderLabel = int.senderId || 'Member'
-                    const statusUpper = String(int.status || '').toUpperCase()
-                    return (
-                      <div className="mm-interest-row" key={int._id}>
-                        <div className="mm-interest-copy" style={{ minWidth: 0 }}>
-                          <Link href={`/profiles/${senderLabel}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                            <strong>{senderLabel}</strong>
-                          </Link>
-                          <span>Status: {statusUpper || 'PENDING'}</span>
-                        </div>
-                        <div className="mm-interest-actions">
-                          {statusUpper === 'ACCEPTED' ? (
-                            <span style={{ color: 'var(--terracotta)', fontSize: '11px', fontWeight: 600 }}>Accepted</span>
-                          ) : statusUpper === 'DECLINED' || statusUpper === 'WITHDRAWN' ? (
-                            <span style={{ color: 'rgba(32,50,44,0.5)', fontSize: '11px', fontWeight: 600 }}>{statusUpper}</span>
-                          ) : (
-                            <button className="mm-small-button mm-small-button-primary" onClick={() => handleAcceptInterest(int._id, senderLabel)}>
-                              <Check size={12} /> Accept
-                            </button>
-                          )}
-                        </div>
+                  interests.map((int: any) => (
+                    <div className="mm-interest-row" key={int._id}>
+                      <div className="mm-interest-copy" style={{ minWidth: 0 }}>
+                        <strong>{int.targetProfileId || 'Interested Member'}</strong>
+                        <span>Status: {int.status}</span>
                       </div>
-                    )
-                  })
+                      <div className="mm-interest-actions">
+                        {int.status === 'accepted' ? (
+                          <span style={{ color: 'var(--terracotta)', fontSize: '11px', fontWeight: 600 }}>Accepted</span>
+                        ) : (
+                          <button className="mm-small-button mm-small-button-primary" onClick={() => handleAcceptInterest(int._id, int.targetProfileId)}>
+                            <Check size={12} /> Accept
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
             </section>

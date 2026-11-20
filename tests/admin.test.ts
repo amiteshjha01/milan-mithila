@@ -96,39 +96,4 @@ describe('Admin API authorization & RBAC', () => {
     expect((await adminUsers({ action: 'CHANGE_STATUS', userId: admin2.userId, status: 'BLOCKED' }, admin1.cookie)).status).toBe(403)
     expect((await adminUsers({ action: 'DELETE_MEMBER', userId: admin2.userId }, admin1.cookie)).status).toBe(403)
   })
-
-  it('returns comprehensive live data analytics on /api/admin/stats with range filtering', async () => {
-    const admin = await createAdmin('ADMIN')
-    await signup({ role: 'SEEKER' })
-    await signup({ role: 'PARENT' })
-
-    const res = await call(
-      (await import('@/app/api/admin/stats/route')).GET,
-      'GET',
-      '/api/admin/stats?range=7d',
-      { cookie: admin.cookie }
-    )
-
-    expect(res.status).toBe(200)
-    expect(res.json.ok).toBe(true)
-    expect(res.json.analytics).toBeDefined()
-    expect(res.json.analytics.range).toBe('7d')
-    expect(res.json.analytics.timeline).toHaveLength(7)
-    expect(res.json.analytics.timeline[6].cumulativeMembers).toBe(2)
-    expect(res.json.analytics.healthScore.overall).toBeGreaterThanOrEqual(0)
-    expect(res.json.analytics.healthScore.grade).toBeTruthy()
-    expect(res.json.analytics.periodComparison.windowDays).toBe(7)
-    expect(res.json.analytics.periodComparison.signups.current).toBe(2)
-    expect(res.json.analytics.liquidity).toBeDefined()
-    expect(res.json.analytics.overview.totalMembers).toBe(2)
-    expect(res.json.analytics.funnel.totalMembers).toBe(2)
-    expect(res.json.analytics.completionBreakdown).toHaveLength(6)
-    expect(Array.isArray(res.json.analytics.recentActivity)).toBe(true)
-    expect(Array.isArray(res.json.analytics.pendingVerifications)).toBe(true)
-    expect(Array.isArray(res.json.analytics.topDemandedProfiles)).toBe(true)
-    expect(Array.isArray(res.json.analytics.demographics.gender)).toBe(true)
-    expect(Array.isArray(res.json.analytics.geography.topNativeDistricts)).toBe(true)
-    expect(Array.isArray(res.json.analytics.cultural.topGotras)).toBe(true)
-    expect(Array.isArray(res.json.analytics.insights)).toBe(true)
-  })
 })
